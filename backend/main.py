@@ -1,19 +1,20 @@
-"""FastAPI application entry point.
-
-The app imports routers for customers, accounts and transactions.
-"""
-
 from fastapi import FastAPI
+from app.routes.deposits import router as deposits_router
+from app.database import engine, Base
 
-from .api import customers, accounts, transactions
+app = FastAPI(title="Banking Deposit Service")
 
-app = FastAPI(title="Banking App Backend")
+# Create tables
+Base.metadata.create_all(bind=engine)
 
-app.include_router(customers.router, prefix="/customers", tags=["customers"])
-app.include_router(accounts.router, prefix="/accounts", tags=["accounts"])
-app.include_router(transactions.router, prefix="/transactions", tags=["transactions"])
+app.include_router(deposits_router, prefix="/api/v1/deposits", tags=["Deposits"])
 
-# Root endpoint
-@app.get("/")
-async def read_root():
-    return {"message": "Welcome to the Banking API"}
+@app.on_event("startup")
+async def startup_event():
+    # Placeholder for any startup tasks
+    pass
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    # Placeholder for any shutdown tasks
+    pass
